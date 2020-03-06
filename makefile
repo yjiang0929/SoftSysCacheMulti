@@ -1,7 +1,7 @@
-NEW  := MMult0
+NEW  := MMult_4x4_15
 
 %.o: %.c
-	gcc -O2 -Wall -c $< -o $@
+	gcc -O2 -Wall -msse3 -c $< -o $@
 
 all:
 	make clean;
