@@ -1,3 +1,8 @@
+NEW  := MMult0
+NEW  := MMult_1x4_9
+NEW  := MMult_4x4_10
+NEW  := MMult_4x4_11
+NEW  := MMult_4x4_15
 NEW  := Strassen
 
 %.o: %.c
@@ -12,8 +17,8 @@ compare_matrix_multi.x: compare_matrix_multi.o $(NEW).o utils.o
 
 run:
 	make all
-	echo "" > output_$(NEW).csv
-	./compare_matrix_multi.x >>output_$(NEW).csv
+	echo "Size,Gflops,Diff" > output_$(NEW).csv
+	./compare_matrix_multi.x >> output_$(NEW).csv
 
 clean:
 	rm -f *.o *~ core *.x

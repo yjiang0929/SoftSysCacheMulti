@@ -25,7 +25,6 @@ int main() {
     *a, *b, *c, *cref, *cold;
 
   // printf( "MY_MMult = [\n" );
-  printf("Size,Gflops,Diff\n");
 
   for ( p=PFIRST; p<=PLAST; p*=2 ){
     m = p;
