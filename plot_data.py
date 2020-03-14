@@ -16,7 +16,7 @@ for i, filename in enumerate(csvlist):
         gflops = []
         for row in reader:
             size.append(int(row['Size']))
-            gflops.append(float(row['Gflops'].split('e')[0]))
+            gflops.append(float(row['Gflops']))
             diff.append(row['Diff'])
         plt.plot(size, gflops,label=filename, color='rgbcmy'[i])
 
