@@ -18,7 +18,7 @@ for i, filename in enumerate(csvlist):
             size.append(int(row['Size']))
             gflops.append(float(row['Gflops']))
             diff.append(row['Diff'])
-        plt.plot(size, gflops,label=filename, color='rgbcmy'[i])
+        plt.plot(size, gflops,label=filename)
 
 plt.xlabel('Matrix Size')
 plt.ylabel('GFlops/sec')
