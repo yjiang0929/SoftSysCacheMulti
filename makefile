@@ -1,4 +1,4 @@
-NEW  := MMult_4x4_15
+NEW  := Strassen
 
 %.o: %.c
 	gcc -O2 -Wall -msse3 -c $< -o $@
@@ -12,7 +12,7 @@ compare_matrix_multi.x: compare_matrix_multi.o $(NEW).o utils.o
 
 run:
 	make all
-	# echo "version = '$(NEW)';" > output_$(NEW).m
+	echo "" > output_$(NEW).csv
 	./compare_matrix_multi.x >>output_$(NEW).csv
 
 clean:

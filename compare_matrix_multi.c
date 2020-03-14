@@ -3,32 +3,31 @@
 
 #include "utils.h"
 
-#define PFIRST 40
-#define PLAST  800
-#define PINC   40
+#define PFIRST 4
+#define PLAST  1024
 #define NREPEATS 2
 
 void MY_MMult(int, int, int, double *, int, double *, int, double *, int );
 
 int main() {
-    int 
-    p, 
+    int
+    p,
     m, n, k,
-    lda, ldb, ldc, 
+    lda, ldb, ldc,
     rep;
 
   double
-    dtime, dtime_best,        
-    gflops, 
+    dtime, dtime_best,
+    gflops,
     diff;
 
-  double 
-    *a, *b, *c, *cref, *cold;  
+  double
+    *a, *b, *c, *cref, *cold;
 
   // printf( "MY_MMult = [\n" );
   printf("Size,Gflops,Diff\n");
-  
-  for ( p=PFIRST; p<=PLAST; p+=PINC ){
+
+  for ( p=PFIRST; p<=PLAST; p*=2 ){
     m = p;
     n = p;
     k = p;
@@ -38,14 +37,14 @@ int main() {
     // lda = ( LDA == -1 ? m : LDA );
     // ldb = ( LDB == -1 ? k : LDB );
     // ldc = ( LDC == -1 ? m : LDC );
-    lda = 1000;
-    ldb = 1000;
-    ldc = 1000;
+    lda = m;
+    ldb = k;
+    ldc = m;
 
     /* Allocate space for the matrices */
     /* Note: I create an extra column in A to make sure that
        prefetching beyond the matrix does not cause a segfault */
-    a = ( double * ) malloc( lda * (k+1) * sizeof( double ) );  
+    a = ( double * ) malloc( lda * (k+1) * sizeof( double ) );
     b = ( double * ) malloc( ldb * n * sizeof( double ) );
     c = ( double * ) malloc( ldc * n * sizeof( double ) );
     cold = ( double * ) malloc( ldc * n * sizeof( double ) );
@@ -70,7 +69,7 @@ int main() {
       dtime = dclock();
 
       MY_MMult( m, n, k, a, lda, b, ldb, c, ldc );
-      
+
       dtime = dclock() - dtime;
 
       if ( rep==0 )
