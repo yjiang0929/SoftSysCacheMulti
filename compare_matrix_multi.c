@@ -4,7 +4,7 @@
 #include "utils.h"
 
 #define PFIRST 4
-#define PLAST  2048
+#define PLAST  4096
 #define NREPEATS 2
 
 void MY_MMult(int, int, int, double *, int, double *, int, double *, int );
@@ -58,7 +58,7 @@ int main() {
 
     /* Run the reference implementation so the answers can be compared */
 
-//    REF_MMult( m, n, k, a, lda, b, ldb, cref, ldc );
+  //  REF_MMult( m, n, k, a, lda, b, ldb, cref, ldc );
 
     /* Time the "optimized" implementation */
     for ( rep=0; rep<NREPEATS; rep++ ){
