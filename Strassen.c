@@ -131,38 +131,39 @@ Matrix *subdivide(Matrix *a, int start_row, int start_col) {
 
 Matrix *merge(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     int size = a->size * 2;
+    int half_size = size/2;
     Matrix *r = malloc(sizeof(Matrix));
     r->size = size;
     r->arr = (double *) malloc(size * size * sizeof(double));
 
     // c11
     int index = 0;
-    for (int i = 0; i < size / 2; i++) {
-        for (int j = 0; j < size / 2; j++) {
+    for (int i = 0; i < half_size; i++) {
+        for (int j = 0; j < half_size; j++) {
             R(i, j) = a->arr[index++];
         }
     }
 
     // c12
     index = 0;
-    for (int i = 0; i < size / 2; i++) {
-        for (int j = size / 2; j < size; j++) {
+    for (int i = 0; i < half_size; i++) {
+        for (int j = half_size; j < size; j++) {
             R(i, j) = b->arr[index++];
         }
     }
 
     // c21
     index = 0;
-    for (int i = size / 2; i < size; i++) {
-        for (int j = 0; j < size / 2; j++) {
+    for (int i = half_size; i < size; i++) {
+        for (int j = 0; j < half_size; j++) {
             R(i, j) = c->arr[index++];
         }
     }
 
     // c22
     index = 0;
-    for (int i = size / 2; i < size; i++) {
-        for (int j = size / 2; j < size; j++) {
+    for (int i = half_size; i < size; i++) {
+        for (int j = half_size; j < size; j++) {
             R(i, j) = d->arr[index++];
         }
     }
@@ -172,6 +173,8 @@ Matrix *merge(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
 
 Matrix *Strassen_MMult(Matrix *matrix_a, Matrix *matrix_b) {
     int size = matrix_a->size;
+    int half_size = size/2;
+    
     // Base case
     if (size <= MIN_SIZE) {
         return mult_matrix(matrix_a, matrix_b);
@@ -179,14 +182,14 @@ Matrix *Strassen_MMult(Matrix *matrix_a, Matrix *matrix_b) {
 
     // Sub-divide
     Matrix *a11 = subdivide(matrix_a, 0, 0);
-    Matrix *a12 = subdivide(matrix_a, 0, size / 2);
-    Matrix *a21 = subdivide(matrix_a, size / 2, 0);
-    Matrix *a22 = subdivide(matrix_a, size / 2, size / 2);
+    Matrix *a12 = subdivide(matrix_a, 0, half_size);
+    Matrix *a21 = subdivide(matrix_a, half_size, 0);
+    Matrix *a22 = subdivide(matrix_a, half_size, half_size);
 
     Matrix *b11 = subdivide(matrix_b, 0, 0);
-    Matrix *b12 = subdivide(matrix_b, 0, size / 2);
-    Matrix *b21 = subdivide(matrix_b, size / 2, 0);
-    Matrix *b22 = subdivide(matrix_b, size / 2, size / 2);
+    Matrix *b12 = subdivide(matrix_b, 0, half_size);
+    Matrix *b21 = subdivide(matrix_b, half_size, 0);
+    Matrix *b22 = subdivide(matrix_b, half_size, half_size);
 
     Matrix *a11_p_a22 = sum_matrix(a11, a22);
     Matrix *b11_p_b22 = sum_matrix(b11, b22);
