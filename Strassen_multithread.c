@@ -185,7 +185,8 @@ void *Strassen_MMult(void* s) {
     int size = matrix_a->size;
     // Base case
     if (size <= MIN_SIZE) {
-        return mult_matrix(matrix_a, matrix_b);
+        ((StrassenInput *)s)->c = mult_matrix(matrix_a, matrix_b);
+        return NULL;
     }
 
     // Sub-divide
@@ -211,8 +212,15 @@ void *Strassen_MMult(void* s) {
     Matrix *b21_p_b22 = sum_matrix(b21, b22);
 
     // Relation recursion with multi threading
-    StrassenInput **si = malloc(sizeof(StrassenInput) * 7);
-    si[0]->a = a11_p_a22; si[0]->b = b11_p_b22; 
+    StrassenInput **si = malloc(7 * sizeof(StrassenInput *));
+    si[0] = malloc(sizeof(StrassenInput));
+    si[1] = malloc(sizeof(StrassenInput));
+    si[2] = malloc(sizeof(StrassenInput));
+    si[3] = malloc(sizeof(StrassenInput));
+    si[4] = malloc(sizeof(StrassenInput));
+    si[5] = malloc(sizeof(StrassenInput));
+    si[6] = malloc(sizeof(StrassenInput));
+    si[0]->a = a11_p_a22; si[0]->b = b11_p_b22;
     si[1]->a = b11; si[1]->b = a21_p_a22;
     si[2]->a = a11; si[2]->b = b12_s_b22;
     si[3]->a = a22; si[3]->b = b21_s_b11;
@@ -227,6 +235,7 @@ void *Strassen_MMult(void* s) {
             fprintf(stderr, "Error creating thread %d\n", i);
             exit(1);
         }
+
     }
     for (i=0;i<7;i++) {
         if(pthread_join(strassen_thread[i], NULL)) {
