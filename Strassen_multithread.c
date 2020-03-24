@@ -43,6 +43,14 @@ void free_matrix(Matrix *a) {
     free(a);
 }
 
+StrassenInput *make_strassen_input(Matrix *a, Matrix *b, uint isFirst) {
+    StrassenInput *new = malloc(sizeof(StrassenInput));
+    new->a = a;
+    new->b = b;
+    new->isFirst = isFirst;
+    return new;
+}
+
 void print_mat(Matrix *a) {
     for (int i = 0; i < a->size; i++) {
         for (int j = 0; j < a->size; j++) {
@@ -214,46 +222,34 @@ void *Strassen_MMult(void* s) {
 
     // Relation recursion with multi threading
     StrassenInput **si = malloc(7 * sizeof(StrassenInput *));
-    si[0] = malloc(sizeof(StrassenInput));
-    si[1] = malloc(sizeof(StrassenInput));
-    si[2] = malloc(sizeof(StrassenInput));
-    si[3] = malloc(sizeof(StrassenInput));
-    si[4] = malloc(sizeof(StrassenInput));
-    si[5] = malloc(sizeof(StrassenInput));
-    si[6] = malloc(sizeof(StrassenInput));
-    si[0]->a = a11_p_a22; si[0]->b = b11_p_b22; si[0]->isFirst = 0;
-    si[1]->a = b11; si[1]->b = a21_p_a22; si[1]->isFirst = 0;
-    si[2]->a = a11; si[2]->b = b12_s_b22; si[2]->isFirst = 0;
-    si[3]->a = a22; si[3]->b = b21_s_b11; si[3]->isFirst = 0;
-    si[4]->a = a11_p_a12; si[4]->b = b22; si[4]->isFirst = 0;
-    si[5]->a = a21_s_a11; si[5]->b = b11_p_b12; si[5]->isFirst = 0;
-    si[6]->a = a12_s_a22; si[6]->b = b21_p_b22; si[6]->isFirst = 0;
+    si[0] = make_strassen_input(a11_p_a22, b11_p_b22, 0);
+    si[1] = make_strassen_input(b11, a21_p_a22, 0);
+    si[2] = make_strassen_input(a11, b12_s_b22, 0);
+    si[3] = make_strassen_input(a22, b21_s_b11, 0);
+    si[4] = make_strassen_input(a11_p_a12, b22, 0);
+    si[5] = make_strassen_input(a21_s_a11, b11_p_b12, 0);
+    si[6] = make_strassen_input(a12_s_a22, b21_p_b22, 0);
 
+    int i;
     if (((StrassenInput *)s)->isFirst) {
-      int i;
-      pthread_t strassen_thread[7];
-      for (i=0;i<7;i++) {
-          if (pthread_create(&strassen_thread[i], NULL, Strassen_MMult, si[i])) {
-              fprintf(stderr, "Error creating thread %d\n", i);
-              exit(1);
-          }
-
-      }
-      for (i=0;i<7;i++) {
-          if(pthread_join(strassen_thread[i], NULL)) {
-              fprintf(stderr, "Error joining thread %d\n", i);
-              exit(2);
-          }
-      }
+        pthread_t strassen_thread[7];
+        for (i=0; i<7; i++) {
+            if (pthread_create(&strassen_thread[i], NULL, Strassen_MMult, si[i])) {
+                fprintf(stderr, "Error creating thread %d\n", i);
+                exit(1);
+            }
+        }
+        for (i=0; i<7; i++) {
+            if (pthread_join(strassen_thread[i], NULL)) {
+                fprintf(stderr, "Error joining thread %d\n", i);
+                exit(2);
+            }
+        }
 
     } else {
-      Strassen_MMult(si[0]);
-      Strassen_MMult(si[1]);
-      Strassen_MMult(si[2]);
-      Strassen_MMult(si[3]);
-      Strassen_MMult(si[4]);
-      Strassen_MMult(si[5]);
-      Strassen_MMult(si[6]);
+        for (i=0;i<7;i++) {
+            Strassen_MMult(si[i]);
+        }
     }
 
     Matrix *p1 = si[0]->c;
@@ -315,10 +311,7 @@ void MY_MMult(int m, int n, int k, double *a, int lda,
     Matrix *matrix_a = to_matrix(a, lda);
     Matrix *matrix_b = to_matrix(b, ldb);
 
-    StrassenInput *si = malloc(sizeof(StrassenInput));
-    si->a = matrix_a;
-    si->b = matrix_b;
-    si->isFirst = 1;
+    StrassenInput *si = make_strassen_input(matrix_a, matrix_b, 1);
     Strassen_MMult(si);
 
     for (int i = 0; i < si->c->size; i++) {
