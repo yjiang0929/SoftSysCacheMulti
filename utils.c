@@ -1,5 +1,6 @@
 #include <sys/time.h>
 #include <time.h>
+#include <stdlib.h>
 
 #define A(i,j) a[ (j)*lda + (i) ]
 #define B(i,j) b[ (j)*ldb + (i) ]
@@ -40,7 +41,7 @@ void random_matrix( int m, int n, double *a, int lda )
 
 /* Routine for computing C = A * B + C */
 
-void REF_MMult( int m, int n, int k, double *a, int lda, 
+void REF_MMult( int m, int n, int k, double *a, int lda,
                                     double *b, int ldb,
                                     double *c, int ldc )
 {
@@ -75,4 +76,3 @@ double dclock()
 
         return the_time;
 }
-
