@@ -1,10 +1,10 @@
 # NEW  := MMult0
-# NEW  := MMult_1x4_9
-# NEW  := MMult_4x4_10
-# NEW  := MMult_4x4_11
-# NEW  := MMult_4x4_15
+# NEW  := MMult_1x4_reg
+# NEW  := MMult_4x4_vecreg
+# NEW  := MMult_4x4_vecreg_subblock
+NEW  := MMult_4x4_vecreg_subblock_cache
 # NEW  := Strassen
-NEW := Strassen_multithread
+# NEW := Strassen_multithread
 
 %.o: %.c
 	gcc -O2 -Wall -msse3 -c $< -o $@
