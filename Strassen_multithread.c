@@ -24,7 +24,11 @@ typedef struct {
     int isFirst;
 } StrassenInput;
 
-/* Allocate space for new matrix */
+/**
+ * Allocate space for a new matrix
+ * @param size: size of the matrix
+ * @return: a newly allocated matrix
+ */
 Matrix *make_matrix(int size) {
     Matrix *new = malloc(sizeof(Matrix));
     new->size = size;
@@ -32,7 +36,12 @@ Matrix *make_matrix(int size) {
     return new;
 }
 
-/* Convert array to Matrix struct */
+/**
+ * Convert array to Matrix struct
+ * @param a: 1D array that represents a 2D matrix
+ * @param size: size of the matrix
+ * @return: a newly allocated matrix
+ */
 Matrix *to_matrix(double *a, int size) {
     Matrix *new = malloc(sizeof(Matrix));
     new->size = size;
@@ -40,12 +49,23 @@ Matrix *to_matrix(double *a, int size) {
     return new;
 }
 
-/* Free matrix array and struct */
+/**
+ * Free matrix array and struct
+ * @param a: input matrix
+ */
 void free_matrix(Matrix *a) {
     free(a->arr);
     free(a);
 }
 
+/**
+ * Allocate space for a new strassen input
+ * @param a: matrix a
+ * @param b: matrix b
+ * @param isFirst: flag to indicate whether the input has been broken into threads.
+ *        In the recursion function, threads are only created in the first recursion.
+ * @return: a newly allocated strassen input
+ */
 StrassenInput *make_strassen_input(Matrix *a, Matrix *b, uint isFirst) {
     StrassenInput *new = malloc(sizeof(StrassenInput));
     new->a = a;
@@ -54,7 +74,10 @@ StrassenInput *make_strassen_input(Matrix *a, Matrix *b, uint isFirst) {
     return new;
 }
 
-/* Free Strassen Input */
+/**
+ * Helper function to free Strassen Input
+ * @param si: array of strassen inputs
+ */
 void free_strassen_inputs(StrassenInput **si) {
     free(si[0]);
     free(si[1]);
@@ -66,7 +89,10 @@ void free_strassen_inputs(StrassenInput **si) {
     free(si);
 }
 
-/* Print elements of matrix */
+/**
+ * Print elements of matrix
+ * @param a: input matrix
+ */
 void print_mat(Matrix *a) {
     for (int i = 0; i < a->size; i++) {
         for (int j = 0; j < a->size; j++) {
@@ -77,7 +103,12 @@ void print_mat(Matrix *a) {
     printf("\n");
 }
 
-/* Element-wise add Matrix a and b */
+/**
+ * Element-wise summation of Matrix a and b
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @return: a newly allocated matrix
+ */
 Matrix *sum_matrix(Matrix *a, Matrix *b) {
     Matrix *c = make_matrix(a->size);
 
@@ -90,7 +121,12 @@ Matrix *sum_matrix(Matrix *a, Matrix *b) {
     return c;
 }
 
-/* Element-wise subtract Matrix b from a */
+/**
+ * Element-wise subtract Matrix b from a
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @return: a newly allocated matrix
+ */
 Matrix *subtract_matrix(Matrix *a, Matrix *b) {
     Matrix *c = make_matrix(a->size);
 
@@ -103,8 +139,13 @@ Matrix *subtract_matrix(Matrix *a, Matrix *b) {
     return c;
 }
 
-/* Multiply Matrix a and b
-   Only used for matrices of small size */
+/**
+ * Multiply Matrix a and b
+ *  Only used for matrices of small size
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @return: a newly allocated matrix
+ */
 Matrix *mult_matrix(Matrix *a, Matrix *b) {
     Matrix *c = make_matrix(a->size);
 
@@ -119,8 +160,15 @@ Matrix *mult_matrix(Matrix *a, Matrix *b) {
     return c;
 }
 
-/* According to Strassen algorithm, compute C11 block with Matrix a,b,c,d
-    C11 = A + B - C + D*/
+/**
+ * According to Strassen algorithm, compute C11 block with Matrix a, b, c, d
+ *  C11 = A + B - C + D
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @param c: input matrix c
+ * @param d: input matrix d
+ * @return: a newly allocated matrix
+ */
 Matrix *compute_c11(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     Matrix *r = make_matrix(a->size);
 
@@ -133,8 +181,15 @@ Matrix *compute_c11(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     return r;
 }
 
-/* According to Strassen algorithm, compute C22 block with Matrix a,b,c,d
-    C22 = A - B + C + D*/
+/**
+ * According to Strassen algorithm, compute C22 block with Matrix a, b, c, d
+ *  C22 = A - B + C + D
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @param c: input matrix c
+ * @param d: input matrix d
+ * @return: a newly allocated matrix
+ */
 Matrix *compute_c22(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     Matrix *r = make_matrix(a->size);
 
@@ -147,8 +202,14 @@ Matrix *compute_c22(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     return r;
 }
 
-/* Divide input matrix by half from start_row and start_col
-    Returns the divided matrix */
+/**
+ * Divide input matrix by half from start_row and start_col.
+ * Returns the divided matrix.
+ * @param a: input matrix a
+ * @param start_row: the index of the start row
+ * @param start_col: the index of the start column
+ * @return: a newly allocated matrix
+ */
 Matrix *subdivide(Matrix *a, int start_row, int start_col) {
     int size = a->size / 2;
 
@@ -172,7 +233,14 @@ Matrix *subdivide(Matrix *a, int start_row, int start_col) {
     return new;
 }
 
-/* Merge four small matrices into a full matrix */
+/**
+ * Merge four small matrices into a full matrix
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @param c: input matrix c
+ * @param d: input matrix d
+ * @return: a newly allocated merged matrix
+ */
 Matrix *merge(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     int size = a->size * 2;
     Matrix *r = malloc(sizeof(Matrix));
@@ -214,17 +282,21 @@ Matrix *merge(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     return r;
 }
 
-/* Matrix multiplication with Strassen algorithm
-    Multi-threading is used in the first level of recursion for parallelization
-    and is avoided further to prevent generating too many threads */
-void *Strassen_MMult(void* s) {
-    Matrix* matrix_a = ((StrassenInput *)s)->a;
-    Matrix* matrix_b = ((StrassenInput *)s)->b;
+/**
+ * Matrix multiplication with Strassen algorithm.
+ * Multi-threading is used in the first level of recursion for parallelization
+ * and is avoided further to prevent generating too many threads.
+ * @param s: strassen input
+ * @return: NULL
+ */
+void *Strassen_MMult(void *s) {
+    Matrix *matrix_a = ((StrassenInput *) s)->a;
+    Matrix *matrix_b = ((StrassenInput *) s)->b;
 
     int size = matrix_a->size;
-    // Base case
+    // Base case when the size of the matrix is small enough
     if (size <= MIN_SIZE) {
-        ((StrassenInput *)s)->c = mult_matrix(matrix_a, matrix_b);
+        ((StrassenInput *) s)->c = mult_matrix(matrix_a, matrix_b);
         return NULL;
     }
 
@@ -239,7 +311,7 @@ void *Strassen_MMult(void* s) {
     Matrix *b21 = subdivide(matrix_b, size / 2, 0);
     Matrix *b22 = subdivide(matrix_b, size / 2, size / 2);
 
-    // add and subtract matrix a and b
+    // Add and subtract matrix a and b
     Matrix *a11_p_a22 = sum_matrix(a11, a22);
     Matrix *b11_p_b22 = sum_matrix(b11, b22);
     Matrix *a21_p_a22 = sum_matrix(a21, a22);
@@ -262,22 +334,22 @@ void *Strassen_MMult(void* s) {
     si[6] = make_strassen_input(a12_s_a22, b21_p_b22, 0);
 
     int i;
-    if (((StrassenInput *)s)->isFirst) {
+    if (((StrassenInput *) s)->isFirst) {
         pthread_t strassen_thread[7];
-        for (i=0; i<7; i++) {
+        for (i = 0; i < 7; i++) {
             if (pthread_create(&strassen_thread[i], NULL, Strassen_MMult, si[i])) {
                 fprintf(stderr, "Error creating thread %d\n", i);
                 exit(1);
             }
         }
-        for (i=0; i<7; i++) {
+        for (i = 0; i < 7; i++) {
             if (pthread_join(strassen_thread[i], NULL)) {
                 fprintf(stderr, "Error joining thread %d\n", i);
                 exit(2);
             }
         }
     } else {
-        for (i=0;i<7;i++) {
+        for (i = 0; i < 7; i++) {
             Strassen_MMult(si[i]);
         }
     }
@@ -290,7 +362,7 @@ void *Strassen_MMult(void* s) {
     Matrix *p6 = si[5]->c;
     Matrix *p7 = si[6]->c;
 
-    // free intermediate matrices
+    // Free intermediate matrices
     free_matrix(a11);
     free_matrix(a12);
     free_matrix(a21);
@@ -327,7 +399,7 @@ void *Strassen_MMult(void* s) {
     free_matrix(p6);
     free_matrix(p7);
 
-    ((StrassenInput *)s)->c = merge(c11, c12, c21, c22);
+    ((StrassenInput *) s)->c = merge(c11, c12, c21, c22);
 
     free_matrix(c11);
     free_matrix(c12);
@@ -347,6 +419,7 @@ void MY_MMult(int m, int n, int k, double *a, int lda,
     StrassenInput *si = make_strassen_input(matrix_a, matrix_b, 1);
     Strassen_MMult(si);
 
+    // Convert Matrix to array
     for (int i = 0; i < si->c->size; i++) {
         for (int j = 0; j < si->c->size; j++) {
             c_r[i * ldc + j] = SiC(i, j);
