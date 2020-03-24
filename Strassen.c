@@ -15,7 +15,11 @@ typedef struct {
     int size;
 } Matrix;
 
-/* Allocate space for new matrix */
+/**
+ * Allocate space for a new matrix
+ * @param size: size of the matrix
+ * @return: a newly allocated matrix
+ */
 Matrix *make_matrix(int size) {
     Matrix *new = malloc(sizeof(Matrix));
     new->size = size;
@@ -23,7 +27,12 @@ Matrix *make_matrix(int size) {
     return new;
 }
 
-/* Convert array to Matrix struct */
+/**
+ * Convert array to Matrix struct
+ * @param a: 1D array that represents a 2D matrix
+ * @param size: size of the matrix
+ * @return: a newly allocated matrix
+ */
 Matrix *to_matrix(double *a, int size) {
     Matrix *new = malloc(sizeof(Matrix));
     new->size = size;
@@ -31,13 +40,19 @@ Matrix *to_matrix(double *a, int size) {
     return new;
 }
 
-/* Free matrix array and struct */
+/**
+ * Free matrix array and struct
+ * @param a: input matrix
+ */
 void free_matrix(Matrix *a) {
     free(a->arr);
     free(a);
 }
 
-/* Print elements of matrix */
+/**
+ * Print elements of matrix
+ * @param a: input matrix
+ */
 void print_mat(Matrix *a) {
     for (int i = 0; i < a->size; i++) {
         for (int j = 0; j < a->size; j++) {
@@ -48,7 +63,12 @@ void print_mat(Matrix *a) {
     printf("\n");
 }
 
-/* Element-wise add Matrix a and b */
+/**
+ * Element-wise summation of Matrix a and b
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @return: a newly allocated matrix
+ */
 Matrix *sum_matrix(Matrix *a, Matrix *b) {
     Matrix *c = make_matrix(a->size);
 
@@ -61,7 +81,12 @@ Matrix *sum_matrix(Matrix *a, Matrix *b) {
     return c;
 }
 
-/* Element-wise subtract Matrix b from a */
+/**
+ * Element-wise subtract Matrix b from a
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @return: a newly allocated matrix
+ */
 Matrix *subtract_matrix(Matrix *a, Matrix *b) {
     Matrix *c = make_matrix(a->size);
 
@@ -74,8 +99,13 @@ Matrix *subtract_matrix(Matrix *a, Matrix *b) {
     return c;
 }
 
-/* Multiply Matrix a and b
-   Only used for matrices of small size */
+/**
+ * Multiply Matrix a and b
+ *  Only used for matrices of small size
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @return: a newly allocated matrix
+ */
 Matrix *mult_matrix(Matrix *a, Matrix *b) {
     Matrix *c = make_matrix(a->size);
 
@@ -90,8 +120,15 @@ Matrix *mult_matrix(Matrix *a, Matrix *b) {
     return c;
 }
 
-/* According to Strassen algorithm, compute C11 block with Matrix a,b,c,d
-    C11 = A + B - C + D*/
+/**
+ * According to Strassen algorithm, compute C11 block with Matrix a, b, c, d
+ *  C11 = A + B - C + D
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @param c: input matrix c
+ * @param d: input matrix d
+ * @return: a newly allocated matrix
+ */
 Matrix *compute_c11(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     Matrix *r = make_matrix(a->size);
 
@@ -104,8 +141,15 @@ Matrix *compute_c11(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     return r;
 }
 
-/* According to Strassen algorithm, compute C22 block with Matrix a,b,c,d
-    C22 = A - B + C + D*/
+/**
+ * According to Strassen algorithm, compute C22 block with Matrix a, b, c, d
+ *  C22 = A - B + C + D
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @param c: input matrix c
+ * @param d: input matrix d
+ * @return: a newly allocated matrix
+ */
 Matrix *compute_c22(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     Matrix *r = make_matrix(a->size);
 
@@ -118,8 +162,14 @@ Matrix *compute_c22(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     return r;
 }
 
-/* Divide input matrix by half from start_row and start_col
-    Returns the divided matrix */
+/**
+ * Divide input matrix by half from start_row and start_col.
+ * Returns the divided matrix.
+ * @param a: input matrix a
+ * @param start_row: the index of the start row
+ * @param start_col: the index of the start column
+ * @return: a newly allocated matrix
+ */
 Matrix *subdivide(Matrix *a, int start_row, int start_col) {
     int size = a->size / 2;
 
@@ -143,10 +193,17 @@ Matrix *subdivide(Matrix *a, int start_row, int start_col) {
     return new;
 }
 
-/* Merge four small matrices into a full matrix */
+/**
+ * Merge four small matrices into a full matrix
+ * @param a: input matrix a
+ * @param b: input matrix b
+ * @param c: input matrix c
+ * @param d: input matrix d
+ * @return: a newly allocated merged matrix
+ */
 Matrix *merge(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     int size = a->size * 2;
-    int half_size = size/2;
+    int half_size = size / 2;
     Matrix *r = malloc(sizeof(Matrix));
     r->size = size;
     r->arr = (double *) malloc(size * size * sizeof(double));
@@ -186,11 +243,16 @@ Matrix *merge(Matrix *a, Matrix *b, Matrix *c, Matrix *d) {
     return r;
 }
 
-/* Matrix multiplication with Strassen algorithm */
+/**
+ * Matrix multiplication with Strassen algorithm
+ * @param matrix_a: input matrix a
+ * @param matrix_b: input matrix c
+ * @return: a newly allocated resulting matrix
+ */
 Matrix *Strassen_MMult(Matrix *matrix_a, Matrix *matrix_b) {
     int size = matrix_a->size;
-    int half_size = size/2;
-    
+    int half_size = size / 2;
+
     // Base case
     if (size <= MIN_SIZE) {
         return mult_matrix(matrix_a, matrix_b);
