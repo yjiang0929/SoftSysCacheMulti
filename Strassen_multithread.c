@@ -359,6 +359,6 @@ void MY_MMult(int m, int n, int k, double *a, int lda,
             c_r[i * ldc + j] = SiC(i, j);
         }
     }
-    
+
     free(si);
 }
