@@ -56,28 +56,28 @@ As a final step, in `MMult_4x4_vecreg_subblock_cache.c`, we cache kx4 blocks of 
 
 The main idea behind Strassen’s algorithm is that we can treat matrix multiplication as a recursive problem. Strassen’s algorithm takes advantage of divide-and-conquer to recursively break large matrices into smaller sub-blocks that can be used to compute the products of two matrices. To simplify the implementation, we assumed input matrices are square whose dimensions are the power of two. Below are the algorithms of the conventional approach and the Strassen approach:
 ```
-    A               B               A*B (conventional approach)
-     +-----------+   +-----------+   +-------------------+-----------------+
-     | A11 | A12 |   | B11 | B12 |   | A11*B11 + A12*B21 | A11*B12+A12*B22 |
-     +-----+-----+ * +-----+-----+ = +-------------------+-----------------+
-     | A21 | A22 |   | B21 | B22 |   | A21*B11 + A22*B21 | A21*B12+A22*B22 |
-     +-----+-----+   +-----+-----+   +-------------------------------------+
+A               B               A*B (conventional approach)
+ +-----------+   +-----------+   +-------------------+-------------------+
+ | A11 | A12 |   | B11 | B12 |   | A11*B11 + A12*B21 | A11*B12 + A12*B22 |
+ +-----+-----+ * +-----+-----+ = +-------------------+-------------------+
+ | A21 | A22 |   | B21 | B22 |   | A21*B11 + A22*B21 | A21*B12 + A22*B22 |
+ +-----+-----+   +-----+-----+   +---------------------------------------+
 
 
-     Strassen approach: Seven products:
-     P1 = (A11+A22)(B11+B22)
-     P2 = (A21+A22)B11
-     P3 = A11(B12−B22)
-     P4 = A22(B21−B11)
-     P5 = (A11+A12)B22
-     P6 = (A21−A11)(B11+B12)
-     P7 = (A12−A22)(B21+B22)
+ Strassen approach: Seven products:
+ P1 = (A11+A22)(B11+B22)
+ P2 = (A21+A22)B11
+ P3 = A11(B12−B22)
+ P4 = A22(B21−B11)
+ P5 = (A11+A12)B22
+ P6 = (A21−A11)(B11+B12)
+ P7 = (A12−A22)(B21+B22)
 
-             +-------------+-------------+
-             | P1+P4-P5+P7 |    P3+P5    |
-     A * B = +-------------+-------------+
-             |    P2+P4    | P1+P2-P3+P6 |
-             +-------------+-------------+
+         +-------------+-------------+
+         | P1+P4-P5+P7 |    P3+P5    |
+ A * B = +-------------+-------------+
+         |    P2+P4    | P1+P2-P3+P6 |
+         +-------------+-------------+
 ```
 As we can see, the conventional approach needs 8 multiplications on sub-blocks to compute the product, while the Strassen approach only uses 7 products. It’s worth noting that the Strassen’s algorithm requires a few more summations. However, the number of summations is a constant independent of the size of our matrices ([source](https://stanford.edu/~rezab/classes/cme323/S16/notes/Lecture03/cme323_lec3.pdf)). As a result, the time complexity of the Strassen’s algorithm is O(n) = nlog2, which is better than O(n) = n3 of the conventional approach.
 
@@ -89,7 +89,7 @@ After we completed the implementation for the Strassen’s algorithm, we found t
 
 After completing implementations for GEMM optimization and Strassen’s algorithm in this project, we used the test bench to create a graph to compare the performance between different optimization methods. We tested matrix sizes ranging from 4 to 4096 to see how well each method worked for smaller or bigger matrices. The performance curves for 6 different optimizations along with the basic matrix multiplication method are shown in the graph below.
 
-[Performance comparison](../comparison.png)
+![Performance comparison](https://github.com/yjiang0929/SoftSysCacheMulti/blob/master/comparison.png)
 
 Most of the GEMM methods performed as expected from the tutorial. The vector-specific instructions used in MMult_4x4_vecreg showed a slight improvement over the previous method, but combined with sub-blocking and caching, it achieved a consistent performance at almost 10 GFlops / sec. The Strassen’s algorithm by itself only performed marginally better than the basic matrix multiplication. We think this is because our implementation wasn’t optimized for caching and register uses, and in this case, hardware optimized code brings more performance benefits than an optimized algorithm. After we implemented multi-threading with the Strassen’s algorithm, its performance became on par with the final step of GEMM optimization.
 
@@ -101,5 +101,4 @@ Most of the GEMM methods performed as expected from the tutorial. The vector-spe
 ### **Links**
 
 - Trello board: [https://trello. com/b/kcS0taS8/softsyscachemulti](https://trello.com/b/kcS0taS8/softsyscachemulti) 
-
 - Github repo: [https://github.com/yjiang0929/SoftSysCacheMulti](https://github.com/yjiang0929/SoftSysCacheMulti)
