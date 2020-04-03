@@ -79,7 +79,7 @@ A               B               A*B (conventional approach)
          |    P2+P4    | P1+P2-P3+P6 |
          +-------------+-------------+
 ```
-As we can see, the conventional approach needs 8 multiplications on sub-blocks to compute the product, while the Strassen approach only uses 7 products. It’s worth noting that the Strassen’s algorithm requires a few more summations. However, the number of summations is a constant independent of the size of our matrices ([source](https://stanford.edu/~rezab/classes/cme323/S16/notes/Lecture03/cme323_lec3.pdf)). As a result, the time complexity of the Strassen’s algorithm is O(n) = nlog2, which is better than O(n) = n3 of the conventional approach.
+As we can see, the conventional approach needs 8 multiplications on sub-blocks to compute the product, while the Strassen approach only uses 7 products. It’s worth noting that the Strassen’s algorithm requires a few more summations. However, the number of summations is a constant independent of the size of our matrices ([source](https://stanford.edu/~rezab/classes/cme323/S16/notes/Lecture03/cme323_lec3.pdf)). As a result, the time complexity of the Strassen’s algorithm is O(n) = n<sup>log<sub>2</sub>7</sup>, which is better than O(n) = n<sup>3</sup> of the conventional approach.
 
 #### **Design decision: Strassen with multi-threading**
 
